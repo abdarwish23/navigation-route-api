@@ -24,8 +24,8 @@ logging.basicConfig(level=logging.ERROR)
 load_dotenv()
 
 # Get dump directory from environment variable
-# DUMP_ROUTE_DATA = os.getenv('DUMP_ROUTE_DATA', './dump_route_data')
-DUMP_ROUTE_DATA = os.getcwd()
+DUMP_ROUTE_DATA = os.getenv('DUMP_ROUTE_DATA', './dump_route_data')
+# DUMP_ROUTE_DATA = os.getcwd()
 
 # Ensure the dump directory exists
 os.makedirs(DUMP_ROUTE_DATA, exist_ok=True)
