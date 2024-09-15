@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Load the DUMP_ROUTE_DATA from .env file if available
+export $(grep -v '^#' .env | xargs)
+
+# this endpoint doesn't require s33 location to dump the files its just resonding with jeojson data for the navigation routes
+curl -X POST "http://localhost:8000/navigation_route_geojson" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "lat": 35.6271473943848,
+           "lon": 139.58538125298406,
+           "azimuths": [0, 120, 240],
+           "num_circles": 4,
+           "points_per_circle_base": 8,
+           "max_distance": 1500
+         }' \
+     -o "navigation_route_geojson.json"
+
+# Test the /navigation_route endpoint
+curl -X POST "http://localhost:8000/navigation_route" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "lat": 35.6271473943848,
+           "lon": 139.58538125298406,
+           "azimuths": [0, 120, 240],
+           "num_circles": 4,
+           "points_per_circle_base": 8,
+           "max_distance": 1500
+         }' \
+     -o "${DUMP_ROUTE_DATA}/navigation_route.json"
+
+# Test the /navigation_route_with_plot endpoint and save the image
+curl -X POST "http://localhost:8000/navigation_route_with_plot" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "lat": 35.6271473943848,
+           "lon": 139.58538125298406,
+           "azimuths": [0, 120, 240],
+           "num_circles": 4,
+           "points_per_circle_base": 8,
+           "max_distance": 1500
+         }' | tee "${DUMP_ROUTE_DATA}/navigation_route_with_plot.json" | jq -r '.geojson.properties.plot' | base64 -d > "${DUMP_ROUTE_DATA}/route_plot.png"
+
+# Test the /navigation_route_with_plot_and_kml endpoint, save the image and download the KML
+curl -X POST "http://localhost:8000/navigation_route_with_plot_and_kml" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "lat": 35.6271473943848,
+           "lon": 139.58538125298406,
+           "azimuths": [0, 120, 240],
+           "num_circles": 4,
+           "points_per_circle_base": 8,
+           "max_distance": 1500
+         }' | tee "${DUMP_ROUTE_DATA}/navigation_route_with_plot_and_kml.json" | jq -r '.geojson.properties.plot' | base64 -d > "${DUMP_ROUTE_DATA}/route_plot_with_kml.png"
+
+# Extract the KML filename from the response and download the KML file
+KML_FILENAME=$(jq -r '.geojson.properties.kml_download' "${DUMP_ROUTE_DATA}/navigation_route_with_plot_and_kml.json" | sed 's/^\/download_file\///')
+curl -X GET "http://localhost:8000/download_file/${KML_FILENAME}" \
+     -o "${DUMP_ROUTE_DATA}/downloaded_navigation_route.kml"
+
+# Test the /save_geojson endpoint
+REQUEST_ID=$(jq -r '.request_id' "${DUMP_ROUTE_DATA}/navigation_route.json")
+curl -X POST "http://localhost:8000/save_geojson/${REQUEST_ID}" \
+     -H "Content-Type: application/json" \
+     -d @"${DUMP_ROUTE_DATA}/navigation_route_geojson.json" \
+     -o "${DUMP_ROUTE_DATA}/save_geojson_response.json"
