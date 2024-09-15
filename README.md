@@ -57,11 +57,11 @@ The API will be available at `http://localhost:8000`.
 
 ## API Endpoints
 
-- `/navigation_route_geojson`: Generate a GeoJSON navigation route
-- `/navigation_route`: Generate a navigation route and save it
-- `/navigation_route_with_plot`: Generate a route with a plot
-- `/navigation_route_with_plot_and_kml`: Generate a route with a plot and KML file
-- `/download_file/{filename}`: Download a generated file
+- `/navigation_route_geojson`: Generate a GeoJSON navigation route in the response only
+- `/navigation_route`: Generate a navigation route and save it (dump the geojson file into the path in .env file)
+- `/navigation_route_with_plot`: Generate a route with a plot (dump the geojson file and plot into the path in .env file)
+- `/navigation_route_with_plot_and_kml`: Generate a route with a plot and KML file (dump the geojson file and plot and kml files into the path in .env file)
+- `/download_file/{filename}`: Download a generated file 
 - `/save_geojson/{request_id}`: Save a custom GeoJSON file
 
 ## Usage Examples
