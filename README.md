@@ -2,6 +2,11 @@
 
 This FastAPI application provides endpoints for generating navigation routes, including options for GeoJSON output, plot generation, and KML file creation.
 
+
+![image](https://github.com/user-attachments/assets/99331636-6865-45c8-922c-ddab46c0b81b)
+
+
+
 ## Table of Contents
 
 1. [Installation](#installation)
